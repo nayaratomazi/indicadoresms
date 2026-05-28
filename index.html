@@ -1,919 +1,343 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist de indicadores</title>
-    
+    <title>Checklist de Indicadores do Paciente</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f4f8;
-            color: #334e68;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        h1, h3 {
-            color: #102a43;
-            text-align: center;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        fieldset {
-            border: 1px solid #cdd5e0;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #fafcfd;
-        }
-        legend {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: #334e68;
-            padding: 0 10px;
-            background-color: #fafcfd;
-            border-radius: 4px;
-        }
-        label {
-            display: block;
-            margin-bottom: 12px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
-        }
-        label:hover {
-            background-color: #e2e8f0;
-        }
-        input[type="radio"] {
-            margin-right: 10px;
-        }
-        .checklist {
-            background-color: #f0f4f8;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #cdd5e0;
-            margin-top: 20px;
-        }
-        .checklist h3 {
-            margin-top: 0;
-            border-bottom: 2px solid #334e68;
-            padding-bottom: 10px;
-        }
-        .checklist ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .checklist li {
-            margin-bottom: 10px;
-            padding: 8px;
-            background-color: #e2e8f0;
-            border-radius: 4px;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #2b6cb0;
+            --secondary: #3182ce;
+            --bg: #edf2f7;
+            --text: #2d3748;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
         }
         
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 15px;
-            }
-            fieldset {
-                padding: 15px;
-            }
+        * { box-sizing: border-box; font-family: 'Inter', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* --- Estilos da Tela (Ocultos na Impressão) --- */
+        .no-print {
+            background-color: var(--card-bg); padding: 30px; border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 20px;
+            border: 1px solid var(--border);
         }
+        h1 { color: var(--primary); font-size: 24px; margin-top: 0; text-align: center; font-weight: 700; }
+        p.subtitle { text-align: center; color: #718096; font-size: 14px; margin-bottom: 25px; margin-top: -10px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #4a5568; font-size: 14px; }
+        select {
+            width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px;
+            font-size: 15px; background-color: #fff; color: #2d3748;
+            transition: border-color 0.2s;
+        }
+        select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2); }
+        
+        .button-group { display: flex; gap: 10px; margin-top: 30px; }
+        button {
+            flex: 1; padding: 14px; background-color: var(--primary); color: white;
+            border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        button:hover { background-color: var(--secondary); transform: translateY(-1px); }
+        .btn-print { background-color: #38a169; display: none; }
+        .btn-print:hover { background-color: #2f855a; }
 
-        /* ==========================================
-           ESTILOS DE IMPRESSÃO (INFORME DA CADERNETA)
-           ========================================== */
+        /* --- Estilos da Área de Exibição na Tela --- */
+        #print-area { display: none; background: #fff; padding: 30px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .checklist-header { border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
+        .checklist-title { font-size: 20px; color: var(--primary); margin: 0 0 10px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+        .checklist-meta { font-size: 14px; color: #4a5568; margin-top: 5px; background: #f7fafc; padding: 5px 10px; border-radius: 4px; display: inline-block; margin: 2px;}
+        .checklist-item { margin-bottom: 12px; display: flex; align-items: flex-start; padding: 8px; background: #fbfbfc; border-radius: 6px; border: 1px solid #edf2f7; }
+        .checkbox-box {
+            width: 18px; height: 18px; border: 2px solid #a0aec0; border-radius: 4px;
+            margin-right: 12px; flex-shrink: 0; margin-top: 2px; background: white;
+        }
+        .item-text { font-size: 14px; line-height: 1.5; color: #2d3748; }
+
+        /* --- ESTILOS EXCLUSIVOS PARA IMPRESSÃO (Ficha Compacta) --- */
         @media print {
-            body, .container {
-                background-color: white;
+            @page { margin: 10mm; } /* Margens menores no papel */
+            body { background-color: white; padding: 0; }
+            .no-print { display: none !important; }
+            
+            #print-area { 
+                display: block !important; 
+                border: 1px dashed #718096; /* Borda de "recorte" para colar na caderneta */
+                padding: 12px; 
+                max-width: 12cm; /* Limita a largura para ficar pequeno como uma ficha */
+                margin: 0 auto; 
                 box-shadow: none;
-                padding: 0;
-                margin: 0;
-                color: black;
             }
-            /* Esconde as perguntas, cabeçalhos e botões */
-            h1, fieldset, #btn-imprimir {
-                display: none !important;
+            
+            .checklist-header { border-bottom: 1px solid #cbd5e0; padding-bottom: 8px; margin-bottom: 12px; text-align: left; }
+            .checklist-title { font-size: 11pt; margin: 0 0 4px 0; color: #000; letter-spacing: 0; }
+            .checklist-meta { font-size: 8pt; color: #000; background: none; padding: 0; margin: 2px 0; display: block; }
+            
+            .checklist-item { margin-bottom: 6px; padding: 0; background: transparent; border: none; align-items: flex-start;}
+            .checkbox-box {
+                width: 10px; height: 10px; border: 1px solid #000; border-radius: 2px;
+                margin-right: 6px; margin-top: 2px;
             }
-            /* Limpa o visual do checklist para gastar menos tinta */
-            .checklist {
-                background-color: white;
-                border: none;
-                padding: 0;
-                margin: 0;
-            }
-            .checklist h3 {
-                border-bottom: 2px solid #000;
-                padding-bottom: 5px;
-                margin-bottom: 20px;
-                color: black;
-                text-align: left;
-                font-size: 1.2em;
-            }
-            /* Transforma os itens da lista em caixinhas de marcar para a caneta */
-            .checklist li {
-                background-color: white;
-                border: none;
-                border-bottom: 1px solid #ddd;
-                margin-bottom: 8px;
-                padding-left: 30px;
-                position: relative;
-                list-style-type: none;
-                page-break-inside: avoid;
-            }
-            /* Desenha o quadradinho [ ] vazio no papel */
-            .checklist li::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: 5px;
-                width: 14px;
-                height: 14px;
-                border: 2px solid #334e68;
-                border-radius: 3px;
-            }
-        }
-
-        /* Estilo do botão de imprimir na tela (Celular/PC) */
-        #btn-imprimir {
-            display: none;
-            width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            background-color: #10b981;
-            color: white;
-            font-size: 1.1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #btn-imprimir:hover {
-            background-color: #059669;
+            .item-text { font-size: 7.5pt; line-height: 1.2; color: #000; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Checklist de indicadores</h1>
-        <form id="healthForm">
-            <fieldset>
-                <legend>Qual o sexo do paciente?</legend>
-                <label><input type="radio" name="sexo" value="masculino"> Masculino</label>
-                <label><input type="radio" name="sexo" value="feminino"> Feminino</label>
-            </fieldset>
+<div class="container">
+    <div class="no-print">
+        <h1>Indicadores de Saúde</h1>
+        <p class="subtitle">Gerador de Checklist para Caderneta do Paciente</p>
+        
+        <div class="form-group">
+            <label for="sexo">1. Sexo do Paciente</label>
+            <select id="sexo" onchange="atualizarFormulario()">
+                <option value="">Selecione...</option>
+                <option value="F">Feminino</option>
+                <option value="M">Masculino</option>
+            </select>
+        </div>
 
-            <div id="masculinoFlow" class="flow" style="display: none;">
-                <fieldset>
-                    <legend>Qual a faixa etária do paciente?</legend>
-                    <label><input type="radio" name="faixaEtariaMasculino" value="0a2"> 0 a 2 anos</label>
-                    <label><input type="radio" name="faixaEtariaMasculino" value="2a59"> 2 a 59 anos</label>
-                    <label><input type="radio" name="faixaEtariaMasculino" value="60+"> Maior que 60 anos</label>
-                </fieldset>
+        <div class="form-group" id="div-idade" style="display:none;">
+            <label for="idade">2. Faixa Etária</label>
+            <select id="idade"></select>
+        </div>
 
-                <div id="comorbidadeMasculinoDiv" style="display: none;">
-                    <fieldset>
-                        <legend>O paciente possui alguma das comorbidades abaixo?</legend>
-                        <label><input type="radio" name="comorbidadeMasculino" value="nenhuma"> Nenhuma</label>
-                        <label><input type="radio" name="comorbidadeMasculino" value="has"> HAS (Hipertensão)</label>
-                        <label><input type="radio" name="comorbidadeMasculino" value="dm"> DM (Diabetes)</label>
-                        <label><input type="radio" name="comorbidadeMasculino" value="has_dm"> HAS e DM</label>
-                    </fieldset>
-                </div>
+        <div class="form-group" id="div-condicao" style="display:none;">
+            <label for="condicao">3. Condições Clínicas</label>
+            <select id="condicao"></select>
+        </div>
 
-                <div id="masculinoChecklists" class="checklists" style="display: none;">
-                    <div id="masc-0a2-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 0 a 2 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-0a2-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 0 a 2 anos, com HAS</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="masc-0a2-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 0 a 2 anos, com DM</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-0a2-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 0 a 2 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-2a59-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 2 a 59 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-2a59-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 2 a 59 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-2a59-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 2 a 59 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-2a59-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, 2 a 59 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Não existe indicador específica para esta faixa etária no sexo Masculino, manter as atividades preventivas de rotina e ofertas na unidade.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-60+-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, maior que 60 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-60+-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, maior que 60 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-60+-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, maior que 60 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="masc-60+-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Masculino, maior que 60 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div id="femininoFlow" class="flow" style="display: none;">
-                <fieldset>
-                    <legend>Qual a faixa etária do paciente?</legend>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="0a2"> 0 a 2 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="3a8"> 3 a 8 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="9a14"> 9 a 14 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="15a23"> 15 a 23 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="24a49"> 24 a 49 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="50a59"> 50 a 59 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="60a64"> 60 a 64 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="65a69"> 65 a 69 anos</label>
-                    <label><input type="radio" name="faixaEtariaFeminino" value="70+"> 70 anos ou mais</label>
-                </fieldset>
-
-                <div id="comorbidadeFemininoDiv" style="display: none;">
-                    <fieldset>
-                        <legend>O paciente possui alguma das comorbidades abaixo?</legend>
-                        <label><input type="radio" name="comorbidadeFeminino" value="nenhuma"> Nenhuma</label>
-                        <label><input type="radio" name="comorbidadeFeminino" value="has"> HAS (Hipertensão)</label>
-                        <label><input type="radio" name="comorbidadeFeminino" value="dm"> DM (Diabetes)</label>
-                        <label><input type="radio" name="comorbidadeFeminino" value="has_dm"> HAS e DM</label>
-                    </fieldset>
-                </div>
-
-                <div id="femininoChecklists" class="checklists" style="display: none;">
-                    <div id="fem-0a2-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 0 a 2 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-0a2-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 0 a 2 anos, com HAS</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-0a2-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 0 a 2 anos, com DM</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-0a2-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 0 a 2 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;</li>
-                            <li>09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;</li>
-                            <li>09 registros de peso e altura até os dois anos de vida;</li>
-                            <li>02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;</li>
-                            <li>Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas.</li>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-
-                    <div id="fem-3a8-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 3 a 8 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Não existe indicador específica para esta faixa etária no sexo Masculino, manter as atividades preventivas de rotina e ofertas na unidade.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-3a8-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 3 a 8 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-3a8-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 3 a 8 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-3a8-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 3 a 8 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                        </ul>
-                    </div>
-
-                    <div id="fem-9a14-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 9 a 14 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Ter registro de pelo menos uma dose da vacina HPV;</li>
-                            <li>Para as de 14 anos, ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-9a14-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 9 a 14 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de pelo menos uma dose da vacina HPV;</li>
-                            <li>Para as de 14 anos, ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-9a14-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 9 a 14 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de pelo menos uma dose da vacina HPV;</li>
-                            <li>Para as de 14 anos, ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-9a14-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 9 a 14 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de pelo menos uma dose da vacina HPV;</li>
-                            <li>Para as de 14 anos, ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-
-                    <div id="fem-15a23-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 15 a 23 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-15a23-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 15 a 23 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-15a23-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 15 a 23 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-15a23-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 15 a 23 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                        </ul>
-                    </div>
-
-                    <div id="fem-24a49-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 24 a 49 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-24a49-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 24 a 49 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-24a49-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 24 a 49 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                        </ul>
-                    </div>
-                    <div id="fem-24a49-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 24 a 49 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                        </ul>
-                    </div>
-
-                    <div id="fem-50a59-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 50 a 59 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-50a59-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 50 a 59 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-50a59-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 50 a 59 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-50a59-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 50 a 59 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                        </ul>
-                    </div>
-                    
-                    <div id="fem-60a64-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 60 a 64 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-60a64-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 60 a 64 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-60a64-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 60 a 64 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-60a64-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 60 a 64 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-
-                    <div id="fem-65a69-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 65 a 69 anos, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-65a69-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 65 a 69 anos, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-65a69-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 65 a 69 anos, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-65a69-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 65 a 69 anos, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, realizado nos últimos 12 meses;</li>
-                            <li>Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, solicitado ou avaliado nos últimos 24 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    
-                    <div id="fem-70+-nenhuma" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 70 anos ou mais, sem comorbidades</h3>
-                        <ul>
-                            <li>Verificar calendário vacinal e atualização</li>
-                            <li>Ofertar consulta odontológica</li>
-                            <li>Ofertar aferição de pressão arterial</li>
-                            <li>Ofertar peso e altura</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-70+-has" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 70 anos ou mais, com HAS</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-70+-dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 70 anos ou mais, com DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                    <div id="fem-70+-has_dm" class="checklist" style="display: none;">
-                        <h3>Checklist: Feminino, 70 anos ou mais, com HAS e DM</h3>
-                        <ul>
-                            <li>01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;</li>
-                            <li>01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;</li>
-                            <li>01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;</li>
-                            <li>01 registro de avaliação dos pés, realizado nos últimos 12 meses.</li>
-                            <li>02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;</li>
-                            <li>01 (um) registro de peso e altura, nos últimos 12 meses.</li>
-                            <li>Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <button type="button" id="btn-imprimir" onclick="window.print()">🖨️ Imprimir Informe para Caderneta</button>
+        <div class="button-group">
+            <button id="btn-gerar" style="display:none;" onclick="gerarChecklist()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Gerar Checklist
+            </button>
+            <button id="btn-imprimir" class="btn-print" onclick="window.print()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Imprimir Ficha
+            </button>
+        </div>
     </div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const masculinoFlow = document.getElementById('masculinoFlow');
-            const femininoFlow = document.getElementById('femininoFlow');
 
-            const sexoRadios = document.querySelectorAll('input[name="sexo"]');
-            const faixaEtariaMasculinoRadios = document.querySelectorAll('input[name="faixaEtariaMasculino"]');
-            const comorbidadeMasculinoRadios = document.querySelectorAll('input[name="comorbidadeMasculino"]');
-            const comorbidadeMasculinoDiv = document.getElementById('comorbidadeMasculinoDiv');
-            const checklistsMasculino = document.getElementById('masculinoChecklists');
-            
-            const faixaEtariaFemininoRadios = document.querySelectorAll('input[name="faixaEtariaFeminino"]');
-            const comorbidadeFemininoRadios = document.querySelectorAll('input[name="comorbidadeFeminino"]');
-            const comorbidadeFemininoDiv = document.getElementById('comorbidadeFemininoDiv');
-            const checklistsFeminino = document.getElementById('femininoChecklists');
+    <div id="print-area">
+        <div class="checklist-header">
+            <h2 class="checklist-title">Checklist de Indicadores</h2>
+            <div class="checklist-meta" id="dados-paciente"></div>
+            <div class="checklist-meta" id="data-impressao"></div>
+        </div>
+        <div id="lista-indicadores"></div>
+    </div>
+</div>
 
-            function hideAllSections() {
-                masculinoFlow.style.display = 'none';
-                femininoFlow.style.display = 'none';
-                comorbidadeMasculinoDiv.style.display = 'none';
-                checklistsMasculino.style.display = 'none';
-                comorbidadeFemininoDiv.style.display = 'none';
-                checklistsFeminino.style.display = 'none';
-                document.querySelectorAll('.checklist').forEach(el => el.style.display = 'none');
-                document.getElementById('btn-imprimir').style.display = 'none';
+<script>
+    // Banco de dados de indicadores extraídos das regras solicitadas
+    const indicadores = {
+        comum_0a2: [
+            "1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;",
+            "09 consultas por médica(o) ou enfermeira(o) até 2 anos de vida;",
+            "09 registros de peso e altura até os dois anos de vida;",
+            "02 visitas domiciliares realizadas por ACS/Tacs, sendo a primeira até os primeiros 30 dias de vida e a segunda até os 6 meses de vida;",
+            "Vacinada contra difteria, tétano, coqueluche, hepatite B, infecções causadas por Haemophilus Influenzae tipo B, poliomielite, sarampo, caxumba e rubéola, com todas as doses recomendadas."
+        ],
+        comum_gestante: [
+            "1ª consulta presencial ou remota realizada por médica(o) ou enfermeira(o) até a 12ª semana de gestação.",
+            "Pelo menos 07 consultas (presenciais ou remotas) realizadas por médica(o) ou enfermeira(o) durante a gestação.",
+            "Pelo menos 07 registros de aferição de pressão arterial durante a gestação.",
+            "Pelo menos 07 registros simultâneos de peso e altura durante a gestação.",
+            "Pelo menos 03 visitas domiciliares realizadas por ACS/TACS, após a primeira consulta de pré-natal.",
+            "Vacina dTpa registrada a partir da 20ª semana de gestação.",
+            "Registro dos testes rápidos ou exames avaliados para sífilis, HIV e hepatites B e C realizados no 1º trimestre.",
+            "Registro dos testes rápidos ou exames avaliados para sífilis e HIV realizados no 3º trimestre.",
+            "Pelo menos 01 consulta (presencial ou remota) realizada por médica(o) ou enfermeira(o) durante o puerpério.",
+            "Pelo menos 01 visita domiciliar realizada por ACS/TACS durante o puerpério.",
+            "Pelo menos 01 atividade em saúde bucal realizada por cirurgião(ã) dentista ou técnico(a) de saúde bucal durante a gestação."
+        ]
+    };
+
+    const regras = {
+        M: {
+            "0a2": {
+                "nenhuma": [...indicadores.comum_0a2],
+                "hipertensao": [...indicadores.comum_0a2, "01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;"],
+                "diabetes": [...indicadores.comum_0a2, "01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses."],
+                "ambas": [...indicadores.comum_0a2, "01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses."]
+            },
+            "2a59": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Não existe indicador específico para esta faixa etária no sexo Masculino, manter as atividades preventivas de rotina."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses."]
+            },
+            "60mais": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."]
             }
+        },
+        F: {
+            "0a2": {
+                "nenhuma": [...indicadores.comum_0a2],
+                "hipertensao": [...indicadores.comum_0a2, "01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;"],
+                "diabetes": [...indicadores.comum_0a2, "01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses."],
+                "ambas": [...indicadores.comum_0a2, "01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses."]
+            },
+            "3a8": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar peso e altura", "Não existe indicador específico para esta faixa etária, manter atividades preventivas."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses."]
+            },
+            "9a14": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Ter registro de pelo menos uma dose da vacina HPV;", "Para as de 14 anos, ter registro de atendimentos presenciais ou remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de pelo menos uma dose da vacina HPV;", "Para as de 14 anos, ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de pelo menos uma dose da vacina HPV;", "Para as de 14 anos, ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de pelo menos uma dose da vacina HPV;", "Para as de 14 anos, ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "gestante": [...indicadores.comum_gestante]
+            },
+            "15a23": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;"],
+                "gestante": [...indicadores.comum_gestante]
+            },
+            "24a49": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;"],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;"],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;"],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;"],
+                "gestante": [...indicadores.comum_gestante, "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;"]
+            },
+            "50a59": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses."],
+                "gestante": [...indicadores.comum_gestante, "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses."]
+            },
+            "60a64": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer do colo de útero, solicitado ou avaliado nos últimos 36 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."]
+            },
+            "65a69": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Ter registro de atendimentos presenciais/remotos sobre atenção à saúde sexual e reprodutiva, nos últimos 12 meses;", "Ter registro de pelo menos 01 exame de rastreamento para câncer de mama em mulheres de 50 a 69 anos, nos últimos 24 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."]
+            },
+            "70mais": {
+                "nenhuma": ["Verificar calendário vacinal e atualização", "Ofertar consulta odontológica", "Ofertar aferição de pressão arterial", "Ofertar peso e altura", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "hipertensao": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "diabetes": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."],
+                "ambas": ["01 consulta presencial ou remota por profissional médica(o) ou enfermeira(o), nos últimos 6 meses;", "01 registro de aferição da pressão arterial, realizado nos últimos 6 meses;", "01 registro de hemoglobina glicada, solicitada ou avaliada, nos últimos 12 meses;", "01 registro de avaliação dos pés, realizado nos últimos 12 meses.", "02 visitas domiciliares por ACS/Tacs, com intervalo mínimo de 30 dias, realizadas nos últimos 12 meses;", "01 (um) registro de peso e altura, nos últimos 12 meses.", "Registro de uma dose da vacina influenza, nos últimos 12 meses que antecedem o período em análise."]
+            }
+        }
+    };
 
-            function showCorrectChecklist(sexo, faixaEtaria, comorbidade) {
-                document.querySelectorAll('.checklist').forEach(el => el.style.display = 'none');
-                const checklistId = `${sexo}-${faixaEtaria}-${comorbidade}`;
-                const checklist = document.getElementById(checklistId);
-                if (checklist) {
-                    checklist.style.display = 'block';
-                    document.getElementById('btn-imprimir').style.display = 'block';
+    const faixasMasculinas = [
+        { value: '0a2', label: '0 a 2 anos' },
+        { value: '2a59', label: '2 a 59 anos' },
+        { value: '60mais', label: '60 anos ou mais' }
+    ];
+
+    const faixasFemininas = [
+        { value: '0a2', label: '0 a 2 anos' },
+        { value: '3a8', label: '3 a 8 anos' },
+        { value: '9a14', label: '9 a 14 anos' },
+        { value: '15a23', label: '15 a 23 anos' },
+        { value: '24a49', label: '24 a 49 anos' },
+        { value: '50a59', label: '50 a 59 anos' },
+        { value: '60a64', label: '60 a 64 anos' },
+        { value: '65a69', label: '65 a 69 anos' },
+        { value: '70mais', label: '70 anos ou mais' }
+    ];
+
+    function atualizarFormulario() {
+        const sexo = document.getElementById("sexo").value;
+        const selIdade = document.getElementById("idade");
+        const selCond = document.getElementById("condicao");
+        
+        document.getElementById("div-idade").style.display = sexo ? "block" : "none";
+        document.getElementById("div-condicao").style.display = sexo ? "block" : "none";
+        document.getElementById("btn-gerar").style.display = sexo ? "flex" : "none";
+        document.getElementById("btn-imprimir").style.display = "none";
+        document.getElementById("print-area").style.display = "none";
+
+        selIdade.innerHTML = '';
+        selCond.innerHTML = '';
+
+        if (sexo === 'M') {
+            faixasMasculinas.forEach(f => selIdade.add(new Option(f.label, f.value)));
+            selCond.add(new Option("Nenhuma Condição", "nenhuma"));
+            selCond.add(new Option("Hipertensão", "hipertensao"));
+            selCond.add(new Option("Diabetes", "diabetes"));
+            selCond.add(new Option("Hipertensão e Diabetes", "ambas"));
+        } else if (sexo === 'F') {
+            faixasFemininas.forEach(f => selIdade.add(new Option(f.label, f.value)));
+            selCond.add(new Option("Nenhuma Condição", "nenhuma"));
+            selCond.add(new Option("Hipertensão", "hipertensao"));
+            selCond.add(new Option("Diabetes", "diabetes"));
+            selCond.add(new Option("Hipertensão e Diabetes", "ambas"));
+            
+            selIdade.onchange = function() {
+                const idadeVal = selIdade.value;
+                const hasGestante = Array.from(selCond.options).some(opt => opt.value === 'gestante');
+                const canBeGestante = ['9a14', '15a23', '24a49', '50a59'].includes(idadeVal);
+                
+                if (canBeGestante && !hasGestante) {
+                    selCond.add(new Option("Gestante", "gestante"));
+                } else if (!canBeGestante && hasGestante) {
+                    for(let i=0; i<selCond.length; i++){
+                        if(selCond.options[i].value == 'gestante'){
+                            selCond.remove(i);
+                            break;
+                        }
+                    }
                 }
-            }
-            
-            sexoRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    hideAllSections();
-                    if (e.target.value === 'masculino') {
-                        masculinoFlow.style.display = 'block';
-                    } else {
-                        femininoFlow.style.display = 'block';
-                    }
-                });
-            });
+            };
+            selIdade.onchange(); 
+        }
+    }
 
-            // Eventos para o fluxo masculino
-            faixaEtariaMasculinoRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    const idade = e.target.value;
-                    checklistsMasculino.style.display = 'block';
-                    comorbidadeMasculinoDiv.style.display = 'block';
-                    
-                    comorbidadeMasculinoRadios.forEach(r => r.checked = false);
-                    document.getElementById('btn-imprimir').style.display = 'none';
-                    
-                    if (idade === '2a59') {
-                        showCorrectChecklist('masc', idade, 'nenhuma');
-                        comorbidadeMasculinoDiv.style.display = 'none';
-                    } else {
-                        showCorrectChecklist('masc', idade, 'nenhuma');
-                    }
-                });
-            });
+    function gerarChecklist() {
+        const sexo = document.getElementById("sexo").value;
+        const idade = document.getElementById("idade").value;
+        const condicao = document.getElementById("condicao").value;
+        
+        const textoSexo = sexo === 'M' ? 'Masculino' : 'Feminino';
+        const textoIdade = document.getElementById("idade").options[document.getElementById("idade").selectedIndex].text;
+        const textoCondicao = document.getElementById("condicao").options[document.getElementById("condicao").selectedIndex].text;
+        
+        const dataAtual = new Date().toLocaleDateString('pt-BR');
 
-            comorbidadeMasculinoRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    const comorbidade = e.target.value;
-                    const idade = document.querySelector('input[name="faixaEtariaMasculino"]:checked')?.value;
-                    if (idade) {
-                        showCorrectChecklist('masc', idade, comorbidade);
-                    }
-                });
-            });
-            
-            // Eventos para o fluxo feminino
-            faixaEtariaFemininoRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    const idade = e.target.value;
-                    checklistsFeminino.style.display = 'block';
-                    comorbidadeFemininoDiv.style.display = 'block';
-                    
-                    comorbidadeFemininoRadios.forEach(r => r.checked = false);
-                    document.getElementById('btn-imprimir').style.display = 'none';
-                    
-                    if (idade === '0a2' || idade === '3a8' || idade === '9a14' || idade === '15a23' || idade === '24a49' || idade === '50a59' || idade === '60a64' || idade === '65a69' || idade === '70+') {
-                        comorbidadeFemininoDiv.style.display = 'block';
-                    } else {
-                        comorbidadeFemininoDiv.style.display = 'none';
-                    }
-                    showCorrectChecklist('fem', idade, 'nenhuma');
-                });
-            });
+        document.getElementById("dados-paciente").innerHTML = `<strong>Paciente:</strong> ${textoSexo} | ${textoIdade} | ${textoCondicao}`;
+        document.getElementById("data-impressao").innerHTML = `<strong>Data:</strong> ${dataAtual}`;
 
-            comorbidadeFemininoRadios.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    const comorbidade = e.target.value;
-                    const idade = document.querySelector('input[name="faixaEtariaFeminino"]:checked')?.value;
-                    if (idade) {
-                        showCorrectChecklist('fem', idade, comorbidade);
-                    }
-                });
-            });
+        const lista = regras[sexo][idade][condicao] || ["Critérios não mapeados para esta seleção exata, verifique as ofertas de rotina."];
+        
+        const containerLista = document.getElementById("lista-indicadores");
+        containerLista.innerHTML = '';
+        
+        lista.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "checklist-item";
+            div.innerHTML = `<div class="checkbox-box"></div><div class="item-text">${item}</div>`;
+            containerLista.appendChild(div);
         });
-    </script>
+
+        document.getElementById("print-area").style.display = "block";
+        document.getElementById("btn-imprimir").style.display = "flex";
+    }
+</script>
 </body>
 </html>

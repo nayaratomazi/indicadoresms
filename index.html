@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist de Indicadores do Paciente</title>
+    <title>Checklist de Indicadores e SIGTAP</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -53,38 +53,60 @@
         .checklist-header { border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
         .checklist-title { font-size: 20px; color: var(--primary); margin: 0 0 10px 0; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
         .checklist-meta { font-size: 14px; color: #4a5568; margin-top: 5px; background: #f7fafc; padding: 5px 10px; border-radius: 4px; display: inline-block; margin: 2px;}
-        .checklist-item { margin-bottom: 12px; display: flex; align-items: flex-start; padding: 8px; background: #fbfbfc; border-radius: 6px; border: 1px solid #edf2f7; }
+        
+        .checklist-item { margin-bottom: 15px; display: flex; align-items: flex-start; padding: 12px; background: #fbfbfc; border-radius: 8px; border: 1px solid #edf2f7; }
         .checkbox-box {
-            width: 18px; height: 18px; border: 2px solid #a0aec0; border-radius: 4px;
+            width: 20px; height: 20px; border: 2px solid #a0aec0; border-radius: 4px;
             margin-right: 12px; flex-shrink: 0; margin-top: 2px; background: white;
         }
-        .item-text { font-size: 14px; line-height: 1.5; color: #2d3748; }
+        .item-content { flex-grow: 1; }
+        .item-desc { font-size: 15px; line-height: 1.4; color: #2d3748; font-weight: 600; display: block; margin-bottom: 6px; }
+        
+        /* Box onde ficam os SIGTAPs */
+        .sigtap-codes {
+            background-color: #ebf4ff;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #2c5282;
+            border-left: 3px solid var(--secondary);
+            line-height: 1.5;
+        }
 
         /* --- ESTILOS EXCLUSIVOS PARA IMPRESSÃO (Ficha Compacta) --- */
         @media print {
-            @page { margin: 10mm; } /* Margens menores no papel */
+            @page { margin: 5mm; } 
             body { background-color: white; padding: 0; }
             .no-print { display: none !important; }
             
             #print-area { 
                 display: block !important; 
-                border: 1px dashed #718096; /* Borda de "recorte" para colar na caderneta */
-                padding: 12px; 
-                max-width: 12cm; /* Limita a largura para ficar pequeno como uma ficha */
+                border: 1px dashed #718096; 
+                padding: 10px; 
+                max-width: 11cm; 
                 margin: 0 auto; 
                 box-shadow: none;
             }
             
-            .checklist-header { border-bottom: 1px solid #cbd5e0; padding-bottom: 8px; margin-bottom: 12px; text-align: left; }
-            .checklist-title { font-size: 11pt; margin: 0 0 4px 0; color: #000; letter-spacing: 0; }
-            .checklist-meta { font-size: 8pt; color: #000; background: none; padding: 0; margin: 2px 0; display: block; }
+            .checklist-header { border-bottom: 1px solid #cbd5e0; padding-bottom: 6px; margin-bottom: 8px; text-align: left; }
+            .checklist-title { font-size: 10pt; margin: 0 0 3px 0; color: #000; letter-spacing: 0; }
+            .checklist-meta { font-size: 7pt; color: #000; background: none; padding: 0; margin: 1px 0; display: block; }
             
             .checklist-item { margin-bottom: 6px; padding: 0; background: transparent; border: none; align-items: flex-start;}
             .checkbox-box {
                 width: 10px; height: 10px; border: 1px solid #000; border-radius: 2px;
                 margin-right: 6px; margin-top: 2px;
             }
-            .item-text { font-size: 7.5pt; line-height: 1.2; color: #000; }
+            .item-desc { font-size: 7.5pt; line-height: 1.1; color: #000; margin-bottom: 2px; font-weight: 700; }
+            .sigtap-codes {
+                background-color: transparent;
+                padding: 2px 0 2px 6px;
+                margin-top: 1px;
+                border-left: 1px dashed #718096;
+                font-size: 6pt;
+                color: #333;
+                border-radius: 0;
+            }
         }
     </style>
 </head>
@@ -92,8 +114,8 @@
 
 <div class="container">
     <div class="no-print">
-        <h1>Indicadores de Saúde</h1>
-        <p class="subtitle">Gerador de Checklist para Caderneta do Paciente</p>
+        <h1>Indicadores & SIGTAP</h1>
+        <p class="subtitle">Checklist Inteligente com Códigos de Procedimento</p>
         
         <div class="form-group">
             <label for="sexo">1. Sexo do Paciente</label>
@@ -128,7 +150,7 @@
 
     <div id="print-area">
         <div class="checklist-header">
-            <h2 class="checklist-title">Checklist de Indicadores</h2>
+            <h2 class="checklist-title">Checklist de Saúde</h2>
             <div class="checklist-meta" id="dados-paciente"></div>
             <div class="checklist-meta" id="data-impressao"></div>
         </div>
@@ -137,7 +159,7 @@
 </div>
 
 <script>
-    // Banco de dados de indicadores extraídos das regras solicitadas
+    // BASE DE DADOS DOS INDICADORES
     const indicadores = {
         comum_0a2: [
             "1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;",
@@ -309,6 +331,68 @@
         }
     }
 
+    // FUNÇÃO QUE LÊ O TEXTO E ANEXA O SIGTAP CORRETO DENTRO DO ITEM
+    function formatarItemComSigtap(texto) {
+        let sigtapHtml = "";
+        
+        // 1. Antropometria
+        if (texto.includes("peso e altura")) {
+            sigtapHtml += "<div><strong>SIGTAP (Antropometria):</strong> 01.01.04.002-4 (Avaliação), 01.01.04.007-5 (Altura), 01.01.04.008-3 (Peso)</div>";
+        }
+        // 2. Pressão Arterial
+        if (texto.includes("pressão arterial")) {
+            sigtapHtml += "<div><strong>SIGTAP (Pressão Arterial):</strong> 03.01.10.003-9</div>";
+        }
+        // 3. Consultas (Regras Específicas)
+        if (texto.includes("1a consulta presencial") && texto.includes("30o dia")) {
+            sigtapHtml += "<div><strong>SIGTAP (Puericultura):</strong> 03.01.01.026-9 (Av. Crescimento), 03.01.01.027-7 (Av. Desenvolvimento)</div>";
+        } else if (texto.includes("até 2 anos de vida") && texto.includes("consultas")) {
+            sigtapHtml += "<div><strong>SIGTAP (Puericultura):</strong> 03.01.01.026-9, 03.01.01.027-7, 03.01.01.025-0 (Teleconsulta)</div>";
+        } else if (texto.includes("1ª consulta") && texto.includes("12ª semana")) {
+            sigtapHtml += "<div><strong>SIGTAP (Pré-Natal):</strong> 03.01.01.011-0, 03.01.01.003-0, 03.01.01.006-4, 03.01.01.025-0</div>";
+        } else if (texto.includes("durante a gestação") && texto.includes("consultas")) {
+            sigtapHtml += "<div><strong>SIGTAP (Gestante):</strong> 03.01.01.011-0, 03.01.01.003-0, 03.01.01.006-4, 03.01.01.025-0</div>";
+        } else if (texto.includes("durante o puerpério") && texto.includes("consulta")) {
+            sigtapHtml += "<div><strong>SIGTAP (Puerperal):</strong> 03.01.01.012-9, 03.01.01.003-0, 03.01.01.006-4, 03.01.01.025-0</div>";
+        } else if (texto.includes("nos últimos 6 meses") && texto.includes("consulta")) {
+            sigtapHtml += "<div><strong>SIGTAP (Consulta):</strong> 03.01.01.003-0 (Enfermagem), 03.01.01.006-4 (Médica), 03.01.01.025-0 (Teleconsulta)</div>";
+        }
+        // 4. Visitas Domiciliares
+        if (texto.includes("visitas domiciliares") || texto.includes("visita domiciliar")) {
+            sigtapHtml += "<div><strong>SIGTAP (Visita Domiciliar):</strong> 03.01.01.013-7</div>";
+        }
+        // 5. Exames e Avaliações
+        if (texto.includes("avaliação dos pés")) {
+            sigtapHtml += "<div><strong>SIGTAP (Pé Diabético):</strong> 03.01.04.009-5</div>";
+        }
+        if (texto.includes("hemoglobina glicada")) {
+            sigtapHtml += "<div><strong>SIGTAP (HbA1c):</strong> 02.02.01.050-3 (Dosagem), ABEX008 (Avaliação)</div>";
+        }
+        // 6. Rastramentos Câncer
+        if (texto.includes("câncer do colo de útero")) {
+            sigtapHtml += "<div><strong>SIGTAP (Preventivo):</strong> 02.01.02.003-3 (Coleta), 02.03.01.008-6 / 001-9 (Citopatológico), 02.01.02.007-6 / 008-4 (HPV)</div>";
+        }
+        if (texto.includes("câncer de mama")) {
+            sigtapHtml += "<div><strong>SIGTAP (Mamografia):</strong> 02.04.03.003-0, 02.04.03.018-8 (Rastreamento)</div>";
+        }
+        // 7. Testes Rápidos Gestante
+        if (texto.includes("1º trimestre") && texto.includes("sífilis")) {
+            sigtapHtml += `<div><strong>SIGTAP HIV:</strong> 02.14.01.004-0 / 027-9 / 005-8 / 02.13.01.078-0 / 050-0</div>
+                           <div><strong>SIGTAP Sífilis:</strong> 02.14.01.007-4 / 008-2 / 025-2 / 02.02.03.109-8 / 111-0 / 117-9</div>
+                           <div><strong>SIGTAP Hepatites:</strong> 02.14.01.009-0 / 030-9 / 010-4 / 023-6 / 02.02.03.078-4 / 097-0 / 02.13.01.020-8 / 02.02.03.005-9 / 067-9</div>`;
+        }
+        if (texto.includes("3º trimestre") && texto.includes("sífilis")) {
+            sigtapHtml += `<div><strong>SIGTAP HIV:</strong> 02.14.01.004-0 / 027-9 / 005-8</div>
+                           <div><strong>SIGTAP Sífilis:</strong> 02.14.01.007-4 / 008-2 / 025-2</div>`;
+        }
+
+        // Monta o retorno com ou sem o bloco de SIGTAP
+        if (sigtapHtml !== "") {
+            return `<span class="item-desc">${texto}</span><div class="sigtap-codes">${sigtapHtml}</div>`;
+        }
+        return `<span class="item-desc">${texto}</span>`;
+    }
+
     function gerarChecklist() {
         const sexo = document.getElementById("sexo").value;
         const idade = document.getElementById("idade").value;
@@ -324,14 +408,20 @@
         document.getElementById("data-impressao").innerHTML = `<strong>Data:</strong> ${dataAtual}`;
 
         const lista = regras[sexo][idade][condicao] || ["Critérios não mapeados para esta seleção exata, verifique as ofertas de rotina."];
-        
         const containerLista = document.getElementById("lista-indicadores");
         containerLista.innerHTML = '';
         
-        lista.forEach(item => {
+        // Loop que monta o item no HTML integrando o SIGTAP
+        lista.forEach(itemTexto => {
             const div = document.createElement("div");
             div.className = "checklist-item";
-            div.innerHTML = `<div class="checkbox-box"></div><div class="item-text">${item}</div>`;
+            
+            const conteudoMapeado = formatarItemComSigtap(itemTexto);
+            
+            div.innerHTML = `
+                <div class="checkbox-box"></div>
+                <div class="item-content">${conteudoMapeado}</div>
+            `;
             containerLista.appendChild(div);
         });
 

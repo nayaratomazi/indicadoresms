@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist de Indicadores e SIGTAP</title>
+    <title>Checklist de Indicadores, SIGTAP, CID e CIAP</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
@@ -62,16 +62,21 @@
         .item-content { flex-grow: 1; }
         .item-desc { font-size: 15px; line-height: 1.4; color: #2d3748; font-weight: 600; display: block; margin-bottom: 6px; }
         
-        /* Box onde ficam os SIGTAPs */
         .sigtap-codes {
-            background-color: #ebf4ff;
-            padding: 8px 10px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #2c5282;
-            border-left: 3px solid var(--secondary);
-            line-height: 1.5;
+            background-color: #ebf4ff; padding: 8px 10px; border-radius: 6px; font-size: 13px;
+            color: #2c5282; border-left: 3px solid var(--secondary); line-height: 1.5;
         }
+
+        /* --- Estilos Guia de Códigos CID/CIAP --- */
+        .codigos-guia { margin-top: 30px; border-top: 2px dashed #cbd5e0; padding-top: 20px; }
+        .codigos-title { font-size: 16px; color: #276749; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; text-align: center;}
+        .codigos-box {
+            background-color: #f0fff4; border-left: 4px solid #38a169; border-radius: 6px;
+            padding: 12px; margin-bottom: 15px;
+        }
+        .codigos-box h4 { margin: 0 0 8px 0; color: #22543d; font-size: 14px; border-bottom: 1px solid #c6f6d5; padding-bottom: 4px; }
+        .codigos-content { font-size: 12px; color: #2d3748; line-height: 1.5; column-count: 2; column-gap: 20px; }
+        .codigos-content strong { color: #276749; }
 
         /* --- ESTILOS EXCLUSIVOS PARA IMPRESSÃO (Ficha Compacta) --- */
         @media print {
@@ -80,12 +85,8 @@
             .no-print { display: none !important; }
             
             #print-area { 
-                display: block !important; 
-                border: 1px dashed #718096; 
-                padding: 10px; 
-                max-width: 11cm; 
-                margin: 0 auto; 
-                box-shadow: none;
+                display: block !important; border: 1px dashed #718096; padding: 10px; 
+                max-width: 11cm; margin: 0 auto; box-shadow: none;
             }
             
             .checklist-header { border-bottom: 1px solid #cbd5e0; padding-bottom: 6px; margin-bottom: 8px; text-align: left; }
@@ -93,20 +94,16 @@
             .checklist-meta { font-size: 7pt; color: #000; background: none; padding: 0; margin: 1px 0; display: block; }
             
             .checklist-item { margin-bottom: 6px; padding: 0; background: transparent; border: none; align-items: flex-start;}
-            .checkbox-box {
-                width: 10px; height: 10px; border: 1px solid #000; border-radius: 2px;
-                margin-right: 6px; margin-top: 2px;
-            }
+            .checkbox-box { width: 10px; height: 10px; border: 1px solid #000; border-radius: 2px; margin-right: 6px; margin-top: 2px; }
             .item-desc { font-size: 7.5pt; line-height: 1.1; color: #000; margin-bottom: 2px; font-weight: 700; }
-            .sigtap-codes {
-                background-color: transparent;
-                padding: 2px 0 2px 6px;
-                margin-top: 1px;
-                border-left: 1px dashed #718096;
-                font-size: 6pt;
-                color: #333;
-                border-radius: 0;
-            }
+            .sigtap-codes { background-color: transparent; padding: 2px 0 2px 6px; margin-top: 1px; border-left: 1px dashed #718096; font-size: 6pt; color: #333; border-radius: 0; }
+            
+            /* Impressão dos CIDs/CIAPs */
+            .codigos-guia { margin-top: 10px; padding-top: 5px; border-top: 1px solid #cbd5e0; }
+            .codigos-title { font-size: 8pt; margin-bottom: 5px; color: #000; text-align: left;}
+            .codigos-box { padding: 4px; margin-bottom: 5px; background: transparent; border-left: 1px solid #000; border-radius: 0; }
+            .codigos-box h4 { font-size: 7pt; margin: 0 0 3px 0; color: #000; border-bottom: 1px dotted #000; }
+            .codigos-content { font-size: 6pt; column-count: 2; column-gap: 10px; line-height: 1.1; }
         }
     </style>
 </head>
@@ -114,8 +111,8 @@
 
 <div class="container">
     <div class="no-print">
-        <h1>Indicadores & SIGTAP</h1>
-        <p class="subtitle">Checklist Inteligente com Códigos de Procedimento</p>
+        <h1>Indicadores & SIGTAP/CID/CIAP</h1>
+        <p class="subtitle">Checklist Inteligente de Ações e Codificação</p>
         
         <div class="form-group">
             <label for="sexo">1. Sexo do Paciente</label>
@@ -155,11 +152,11 @@
             <div class="checklist-meta" id="data-impressao"></div>
         </div>
         <div id="lista-indicadores"></div>
+        <div id="area-codigos-extra"></div>
     </div>
 </div>
 
 <script>
-    // BASE DE DADOS DOS INDICADORES
     const indicadores = {
         comum_0a2: [
             "1a consulta presencial por profissional médica(o) ou enfermeira(o), até o 30o dia de vida;",
@@ -273,14 +270,10 @@
     ];
 
     const faixasFemininas = [
-        { value: '0a2', label: '0 a 2 anos' },
-        { value: '3a8', label: '3 a 8 anos' },
-        { value: '9a14', label: '9 a 14 anos' },
-        { value: '15a23', label: '15 a 23 anos' },
-        { value: '24a49', label: '24 a 49 anos' },
-        { value: '50a59', label: '50 a 59 anos' },
-        { value: '60a64', label: '60 a 64 anos' },
-        { value: '65a69', label: '65 a 69 anos' },
+        { value: '0a2', label: '0 a 2 anos' }, { value: '3a8', label: '3 a 8 anos' },
+        { value: '9a14', label: '9 a 14 anos' }, { value: '15a23', label: '15 a 23 anos' },
+        { value: '24a49', label: '24 a 49 anos' }, { value: '50a59', label: '50 a 59 anos' },
+        { value: '60a64', label: '60 a 64 anos' }, { value: '65a69', label: '65 a 69 anos' },
         { value: '70mais', label: '70 anos ou mais' }
     ];
 
@@ -321,8 +314,7 @@
                 } else if (!canBeGestante && hasGestante) {
                     for(let i=0; i<selCond.length; i++){
                         if(selCond.options[i].value == 'gestante'){
-                            selCond.remove(i);
-                            break;
+                            selCond.remove(i); break;
                         }
                     }
                 }
@@ -331,67 +323,59 @@
         }
     }
 
-    // FUNÇÃO QUE LÊ O TEXTO E ANEXA O SIGTAP CORRETO DENTRO DO ITEM
     function formatarItemComSigtap(texto) {
         let sigtapHtml = "";
+        if (texto.includes("peso e altura")) sigtapHtml += "<div><strong>SIGTAP (Antropo):</strong> 01.01.04.002-4, 007-5, 008-3</div>";
+        if (texto.includes("pressão arterial")) sigtapHtml += "<div><strong>SIGTAP (PA):</strong> 03.01.10.003-9</div>";
+        if (texto.includes("1a consulta presencial") && texto.includes("30o dia")) sigtapHtml += "<div><strong>SIGTAP (Pueri):</strong> 03.01.01.026-9, 027-7</div>";
+        else if (texto.includes("até 2 anos") && texto.includes("consultas")) sigtapHtml += "<div><strong>SIGTAP (Pueri):</strong> 03.01.01.026-9, 027-7, 025-0</div>";
+        else if (texto.includes("1ª consulta") && texto.includes("12ª semana")) sigtapHtml += "<div><strong>SIGTAP (Pré-Natal):</strong> 03.01.01.011-0, 003-0, 006-4</div>";
+        else if (texto.includes("durante a gestação") && texto.includes("consultas")) sigtapHtml += "<div><strong>SIGTAP (Gestante):</strong> 03.01.01.011-0, 003-0, 006-4</div>";
+        else if (texto.includes("puerpério") && texto.includes("consulta")) sigtapHtml += "<div><strong>SIGTAP (Puerpério):</strong> 03.01.01.012-9</div>";
+        else if (texto.includes("nos últimos 6 meses") && texto.includes("consulta")) sigtapHtml += "<div><strong>SIGTAP:</strong> 03.01.01.003-0, 006-4</div>";
         
-        // 1. Antropometria
-        if (texto.includes("peso e altura")) {
-            sigtapHtml += "<div><strong>SIGTAP (Antropometria):</strong> 01.01.04.002-4 (Avaliação), 01.01.04.007-5 (Altura), 01.01.04.008-3 (Peso)</div>";
-        }
-        // 2. Pressão Arterial
-        if (texto.includes("pressão arterial")) {
-            sigtapHtml += "<div><strong>SIGTAP (Pressão Arterial):</strong> 03.01.10.003-9</div>";
-        }
-        // 3. Consultas (Regras Específicas)
-        if (texto.includes("1a consulta presencial") && texto.includes("30o dia")) {
-            sigtapHtml += "<div><strong>SIGTAP (Puericultura):</strong> 03.01.01.026-9 (Av. Crescimento), 03.01.01.027-7 (Av. Desenvolvimento)</div>";
-        } else if (texto.includes("até 2 anos de vida") && texto.includes("consultas")) {
-            sigtapHtml += "<div><strong>SIGTAP (Puericultura):</strong> 03.01.01.026-9, 03.01.01.027-7, 03.01.01.025-0 (Teleconsulta)</div>";
-        } else if (texto.includes("1ª consulta") && texto.includes("12ª semana")) {
-            sigtapHtml += "<div><strong>SIGTAP (Pré-Natal):</strong> 03.01.01.011-0, 03.01.01.003-0, 03.01.01.006-4, 03.01.01.025-0</div>";
-        } else if (texto.includes("durante a gestação") && texto.includes("consultas")) {
-            sigtapHtml += "<div><strong>SIGTAP (Gestante):</strong> 03.01.01.011-0, 03.01.01.003-0, 03.01.01.006-4, 03.01.01.025-0</div>";
-        } else if (texto.includes("durante o puerpério") && texto.includes("consulta")) {
-            sigtapHtml += "<div><strong>SIGTAP (Puerperal):</strong> 03.01.01.012-9, 03.01.01.003-0, 03.01.01.006-4, 03.01.01.025-0</div>";
-        } else if (texto.includes("nos últimos 6 meses") && texto.includes("consulta")) {
-            sigtapHtml += "<div><strong>SIGTAP (Consulta):</strong> 03.01.01.003-0 (Enfermagem), 03.01.01.006-4 (Médica), 03.01.01.025-0 (Teleconsulta)</div>";
-        }
-        // 4. Visitas Domiciliares
-        if (texto.includes("visitas domiciliares") || texto.includes("visita domiciliar")) {
-            sigtapHtml += "<div><strong>SIGTAP (Visita Domiciliar):</strong> 03.01.01.013-7</div>";
-        }
-        // 5. Exames e Avaliações
-        if (texto.includes("avaliação dos pés")) {
-            sigtapHtml += "<div><strong>SIGTAP (Pé Diabético):</strong> 03.01.04.009-5</div>";
-        }
-        if (texto.includes("hemoglobina glicada")) {
-            sigtapHtml += "<div><strong>SIGTAP (HbA1c):</strong> 02.02.01.050-3 (Dosagem), ABEX008 (Avaliação)</div>";
-        }
-        // 6. Rastramentos Câncer
-        if (texto.includes("câncer do colo de útero")) {
-            sigtapHtml += "<div><strong>SIGTAP (Preventivo):</strong> 02.01.02.003-3 (Coleta), 02.03.01.008-6 / 001-9 (Citopatológico), 02.01.02.007-6 / 008-4 (HPV)</div>";
-        }
-        if (texto.includes("câncer de mama")) {
-            sigtapHtml += "<div><strong>SIGTAP (Mamografia):</strong> 02.04.03.003-0, 02.04.03.018-8 (Rastreamento)</div>";
-        }
-        // 7. Testes Rápidos Gestante
-        if (texto.includes("1º trimestre") && texto.includes("sífilis")) {
-            sigtapHtml += `<div><strong>SIGTAP HIV:</strong> 02.14.01.004-0 / 027-9 / 005-8 / 02.13.01.078-0 / 050-0</div>
-                           <div><strong>SIGTAP Sífilis:</strong> 02.14.01.007-4 / 008-2 / 025-2 / 02.02.03.109-8 / 111-0 / 117-9</div>
-                           <div><strong>SIGTAP Hepatites:</strong> 02.14.01.009-0 / 030-9 / 010-4 / 023-6 / 02.02.03.078-4 / 097-0 / 02.13.01.020-8 / 02.02.03.005-9 / 067-9</div>`;
-        }
-        if (texto.includes("3º trimestre") && texto.includes("sífilis")) {
-            sigtapHtml += `<div><strong>SIGTAP HIV:</strong> 02.14.01.004-0 / 027-9 / 005-8</div>
-                           <div><strong>SIGTAP Sífilis:</strong> 02.14.01.007-4 / 008-2 / 025-2</div>`;
-        }
+        if (texto.includes("visitas domiciliares") || texto.includes("visita domiciliar")) sigtapHtml += "<div><strong>SIGTAP (VD):</strong> 03.01.01.013-7</div>";
+        if (texto.includes("avaliação dos pés")) sigtapHtml += "<div><strong>SIGTAP:</strong> 03.01.04.009-5</div>";
+        if (texto.includes("hemoglobina glicada")) sigtapHtml += "<div><strong>SIGTAP:</strong> 02.02.01.050-3, ABEX008</div>";
+        if (texto.includes("colo de útero")) sigtapHtml += "<div><strong>SIGTAP:</strong> 02.01.02.003-3, 02.03.01.008-6</div>";
+        if (texto.includes("câncer de mama")) sigtapHtml += "<div><strong>SIGTAP:</strong> 02.04.03.003-0</div>";
 
-        // Monta o retorno com ou sem o bloco de SIGTAP
         if (sigtapHtml !== "") {
             return `<span class="item-desc">${texto}</span><div class="sigtap-codes">${sigtapHtml}</div>`;
         }
         return `<span class="item-desc">${texto}</span>`;
     }
+
+    const dbCodigos = {
+        gestante: `
+            <h4>Gestação e Puerpério</h4>
+            <div class="codigos-content">
+                <strong>CIDs:</strong> O10-O16 (Hipertensão), O20 (Ameaça aborto), O21 (Hiperêmese), O22 (Venosa), O23 (ITU), O24 (DM Gestacional), O30 (Múltipla), Z32.1 (Confirmada), Z34 (Rotina), Z35 (Alto risco), Z39 (Pós-parto), F53 (Mentais puerpério), O85-O94 (Complicações pós-parto).<br><br>
+                <strong>CIAPs:</strong> W01 (Questão), W03/W17 (Sangramento), W05 (Náusea), W10 (Contracepção), W12/W18/W92 (Puerpério), W70/W71 (Infecção), W78 (Confirmada), W81 (Toxemia), W84 (Alto Risco), W85 (DM Gestacional), W90/W91 (Parto).
+            </div>
+        `,
+        diabetes: `
+            <h4>Diabetes Mellitus</h4>
+            <div class="codigos-content">
+                <strong>CIDs:</strong> E10 (Tipo 1 com/sem complicação), E11 (Tipo 2), E14 (Não especificado).<br><br>
+                <strong>CIAPs:</strong> T89 (Insulinodependente), T90 (Não insulinodependente), T99 (Outros), A91 (Resultado anormal - Lab).
+            </div>
+        `,
+        hipertensao: `
+            <h4>Hipertensão Arterial</h4>
+            <div class="codigos-content">
+                <strong>CIDs:</strong> I10 (Essencial), I11 (Cardíaca), I12 (Renal), I13 (Cárdio/Renal), I15 (Secundária), O10/O11 (Pré-existente em Gestante).<br><br>
+                <strong>CIAPs:</strong> K85 (PA Elevada), K86 (HAS s/ complicação), K87 (HAS c/ complicação), K90-K92 (AVC/Cerebro/Periférica).
+            </div>
+        `,
+        saude_mulher: `
+            <h4>Saúde da Mulher (14 a 69 anos)</h4>
+            <div class="codigos-content">
+                <strong>CIDs:</strong> Z12.3 (Rastreio Mama), Z12.4 (Rastreio Colo), Z30 (Anticoncepção), Z31 (Planej. Reprodutivo), N91-N95 (Transtornos Menstruais/Climatério), N97 (Infertilidade).<br><br>
+                <strong>CIAPs:</strong> X10/W10/W14 (Contracepção/Planejamento), X11 (Menopausa), X31 (Preventivo/Rastreamento), X37 (Citologia Cervical), X75 (Neoplasia Colo), X76 (Neoplasia Mama), X86 (Preventivo Anormal).
+            </div>
+        `
+    };
 
     function gerarChecklist() {
         const sexo = document.getElementById("sexo").value;
@@ -399,31 +383,71 @@
         const condicao = document.getElementById("condicao").value;
         
         const textoSexo = sexo === 'M' ? 'Masculino' : 'Feminino';
-        const textoIdade = document.getElementById("idade").options[document.getElementById("idade").selectedIndex].text;
-        const textoCondicao = document.getElementById("condicao").options[document.getElementById("condicao").selectedIndex].text;
+        const selIdade = document.getElementById("idade");
+        const textoIdade = selIdade.options[selIdade.selectedIndex] ? selIdade.options[selIdade.selectedIndex].text : '';
+        const selCond = document.getElementById("condicao");
+        const textoCondicao = selCond.options[selCond.selectedIndex] ? selCond.options[selCond.selectedIndex].text : '';
         
         const dataAtual = new Date().toLocaleDateString('pt-BR');
 
         document.getElementById("dados-paciente").innerHTML = `<strong>Paciente:</strong> ${textoSexo} | ${textoIdade} | ${textoCondicao}`;
         document.getElementById("data-impressao").innerHTML = `<strong>Data:</strong> ${dataAtual}`;
 
-        const lista = regras[sexo][idade][condicao] || ["Critérios não mapeados para esta seleção exata, verifique as ofertas de rotina."];
+        // Tratar lista de indicadores
+        let lista = [];
+        try {
+            lista = regras[sexo][idade][condicao] || ["Critérios não mapeados para esta seleção."];
+        } catch(e) {
+            lista = ["Selecione as opções corretamente."];
+        }
+        
         const containerLista = document.getElementById("lista-indicadores");
         containerLista.innerHTML = '';
         
-        // Loop que monta o item no HTML integrando o SIGTAP
         lista.forEach(itemTexto => {
             const div = document.createElement("div");
             div.className = "checklist-item";
-            
             const conteudoMapeado = formatarItemComSigtap(itemTexto);
-            
-            div.innerHTML = `
-                <div class="checkbox-box"></div>
-                <div class="item-content">${conteudoMapeado}</div>
-            `;
+            div.innerHTML = `<div class="checkbox-box"></div><div class="item-content">${conteudoMapeado}</div>`;
             containerLista.appendChild(div);
         });
+
+        // ---------------------------------------------------------
+        // GERAÇÃO DINÂMICA DO GUIA DE CÓDIGOS CID E CIAP
+        // ---------------------------------------------------------
+        const containerCodigos = document.getElementById("area-codigos-extra");
+        let codigosHtml = `<div class="codigos-guia"><h3 class="codigos-title">Guia de Codificação (CID / CIAP-2)</h3>`;
+        let adicionouCodigo = false;
+
+        if (condicao === 'gestante') {
+            codigosHtml += `<div class="codigos-box">${dbCodigos.gestante}</div>`;
+            adicionouCodigo = true;
+        }
+        if (condicao === 'diabetes' || condicao === 'ambas') {
+            codigosHtml += `<div class="codigos-box">${dbCodigos.diabetes}</div>`;
+            adicionouCodigo = true;
+        }
+        if (condicao === 'hipertensao' || condicao === 'ambas') {
+            codigosHtml += `<div class="codigos-box">${dbCodigos.hipertensao}</div>`;
+            adicionouCodigo = true;
+        }
+        
+        // Verifica Saúde da Mulher (Preventivo, Mama, Sexualidade)
+        const faixasMulher = ['9a14', '15a23', '24a49', '50a59', '60a64', '65a69'];
+        if (sexo === 'F' && faixasMulher.includes(idade)) {
+            codigosHtml += `<div class="codigos-box">${dbCodigos.saude_mulher}</div>`;
+            adicionouCodigo = true;
+        }
+
+        codigosHtml += `</div>`;
+        
+        if(adicionouCodigo) {
+            containerCodigos.innerHTML = codigosHtml;
+            containerCodigos.style.display = "block";
+        } else {
+            containerCodigos.style.display = "none";
+            containerCodigos.innerHTML = "";
+        }
 
         document.getElementById("print-area").style.display = "block";
         document.getElementById("btn-imprimir").style.display = "flex";
